@@ -17,7 +17,7 @@
 :root{--bg:#101613;--card:#1a211c;--card2:#222b24;--ink:#eef3ee;--muted:#9db3a2;--green:#58c472;--green2:#2e7d46;--amber:#f2b544;--red:#e5604f;--line:#2e3a31;--radius:16px}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
 header{padding:20px 16px 8px;max-width:980px;margin:auto}
-h1{margin:0;font-size:32px;letter-spacing:.2px}h1 span{color:var(--green)}
+h1{margin:0;font-size:32px;letter-spacing:.2px}h1 span{color:var(--green)}h1 img.brand{height:1.05em;width:1.05em;border-radius:.24em;vertical-align:-.16em;margin-right:.22em}
 .sub{color:var(--muted);margin:6px 0 0}
 nav{position:sticky;top:0;z-index:5;background:#101613ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 nav .tabs{max-width:980px;margin:auto;display:flex;gap:6px;padding:10px 12px;overflow:auto}
@@ -49,7 +49,7 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 </head>
 <body>
 <header>
-<h1>💪 Bye<span>Belly</span></h1>
+<h1><img class="brand" src="icons/Belt%20icon%20512.png" alt="">Bye<span>Belly</span></h1>
 <p class="sub">Lose the beer gut — food, movement, and the tape measure don't lie.</p>
 <button id="installBtn" class="ghost" style="display:none;margin-top:10px">📲 Install ByeBelly on this device</button>
 <div id="updateBanner" style="display:none;margin-top:10px;background:#2e7d46;color:#fff;padding:12px 14px;border-radius:12px"><b>Update available!</b> A new version of ByeBelly is ready. <button id="updateNowBtn" style="background:#fff;color:#14532a;margin-left:8px">Tap to update</button></div>
@@ -275,7 +275,7 @@ $('pAge').value=S.profile.age;$('pHeight').value=S.profile.height;if(S.profile.w
 $('wDate').value=todayStr();
 render();
 // PWA: offline service worker + install prompt + tap-to-apply updates
-const APP_VERSION='1.1';
+const APP_VERSION='1.2';
 let swReg=null, swWaiting=null, reloading=false;
 function showUpdateBanner(){$('updateBanner').style.display='block';}
 if('serviceWorker' in navigator){

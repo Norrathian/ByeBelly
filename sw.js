@@ -1,5 +1,5 @@
 /* ByeBelly service worker — offline cache + tap-to-apply updates (app v1.1) */
-const CACHE = 'gutcheck-v3';
+const CACHE = 'gutcheck-v4';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/Belt%20icon%20192.png', './icons/Belt%20icon%20512.png'];
 self.addEventListener('install', e => {
   // No automatic skipWaiting: a new version waits until the user taps
