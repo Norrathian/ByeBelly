@@ -1,4 +1,4 @@
-# Gut Check — Lose the Beer Gut
+# ByeBelly — Lose the Beer Gut
 
 A single-file web app for nutrition, exercise, calorie counting, and waist progress.
 No build step, no dependencies, no backend. All data is stored in the browser (localStorage).
@@ -7,8 +7,8 @@ No build step, no dependencies, no backend. All data is stored in the browser (l
 Open `index.html` in a browser, or enable GitHub Pages on this repo (Settings → Pages → Deploy from branch → main / root).
 
 ## Install it like an app (PWA)
-Gut Check is a Progressive Web App: it installs to your home screen, opens full-screen, and works offline (your data is in localStorage on the device either way).
-- **Android / Chrome:** open the live GitHub Pages URL → tap **Install Gut Check** in the app header (or ⋮ menu → Add to Home screen / Install app).
+ByeBelly is a Progressive Web App: it installs to your home screen, opens full-screen, and works offline (your data is in localStorage on the device either way).
+- **Android / Chrome:** open the live GitHub Pages URL → tap **Install ByeBelly** in the app header (or ⋮ menu → Add to Home screen / Install app).
 - **iPhone / Safari:** open the live URL → Share → Add to Home Screen.
 - Files that make this work: `manifest.webmanifest`, `sw.js`, `icons/` (SVG + 192/512 PNG + Apple touch icon).
 - Note: the PNG icons must be uploaded through github.com (drag-and-drop) — pushing binary files through the GitHub API corrupts them.

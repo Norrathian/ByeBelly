@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gut Check — Lose the Beer Gut</title>
+<title>ByeBelly — Lose the Beer Gut</title>
 <meta name="description" content="Nutrition, exercise, calorie counting and waist progress — built to lose the beer gut.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#101613">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Gut Check">
+<meta name="apple-mobile-web-app-title" content="ByeBelly">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <style>
@@ -49,9 +49,9 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 </head>
 <body>
 <header>
-<h1>💪 Gut <span>Check</span></h1>
+<h1>💪 Bye<span>Belly</span></h1>
 <p class="sub">Lose the beer gut — food, movement, and the tape measure don't lie.</p>
-<button id="installBtn" class="ghost" style="display:none;margin-top:10px">📲 Install Gut Check on this device</button>
+<button id="installBtn" class="ghost" style="display:none;margin-top:10px">📲 Install ByeBelly on this device</button>
 </header>
 <nav><div class="tabs">
 <button class="tab active" data-tab="today">Today</button>
@@ -111,12 +111,12 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 <!-- PROGRESS -->
 <section id="progress">
 <div class="card"><h2>Weigh in & measure the gut</h2><div class="row"><input id="wDate" type="date"><input id="wWeight" type="number" step="0.1" placeholder="Weight (lb)"><input id="wWaist" type="number" step="0.1" placeholder="Waist (in) — at the belly button"><button onclick="addMeasure()">Save</button></div>
-<p class="small muted">Weigh in the morning, same time, after the bathroom. Measure the waist relaxed — don't suck it in, that defeats the point of Gut Check.</p></div>
+<p class="small muted">Weigh in the morning, same time, after the bathroom. Measure the waist relaxed — don't suck it in, that defeats the point of ByeBelly.</p></div>
 <div class="card"><h3>Weight trend</h3><svg id="weightChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg><p class="small muted" id="weightStats"></p></div>
 <div class="card"><h3>Waist trend — this is the one that matters</h3><svg id="waistChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg><p class="small muted" id="waistStats"></p></div>
 <div class="card"><h3>🏆 Badges</h3><div class="grid" id="badges"></div></div>
 <div class="card"><h3>Weekly report card</h3><pre id="report" style="white-space:pre-wrap;font-family:inherit"></pre><button class="ghost" onclick="copyReport()">Copy report</button></div>
-<div class="card"><h3>Your data is yours</h3><div class="row"><button class="ghost" onclick="exportData()">Export JSON</button><button class="ghost" onclick="document.getElementById('importFile').click()">Import JSON</button><input type="file" id="importFile" accept=".json" style="display:none"><button class="danger" onclick="if(confirm('Clear all Gut Check data?')){localStorage.removeItem(KEY);location.reload()}">Clear all</button></div></div>
+<div class="card"><h3>Your data is yours</h3><div class="row"><button class="ghost" onclick="exportData()">Export JSON</button><button class="ghost" onclick="document.getElementById('importFile').click()">Import JSON</button><input type="file" id="importFile" accept=".json" style="display:none"><button class="danger" onclick="if(confirm('Clear all ByeBelly data?')){localStorage.removeItem(KEY);location.reload()}">Clear all</button></div></div>
 </section>
 
 <!-- EAT SMART -->
@@ -146,7 +146,7 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 <p class="small muted">Targets use Mifflin-St Jeor. Deficit is capped at a sustainable ~500 cal/day — about 1 lb/week. Faster is not better; sustainable wins.</p></div>
 </section>
 </main>
-<footer>Gut Check • Your data lives only in this browser (localStorage). Export it anytime from Progress. Not medical advice — check with a doctor before a new exercise program, especially with any health conditions.</footer>
+<footer>ByeBelly • Your data lives only in this browser (localStorage). Export it anytime from Progress. Not medical advice — check with a doctor before a new exercise program, especially with any health conditions.</footer>
 
 <dialog id="sos"><h3>🍔 Hunger SOS — wait it out</h3><p>Do these three things first:</p><ol><li>Drink a full glass of water (tap one on Today).</li><li>Start this 10-minute timer and go for a short walk.</li><li>Still hungry after? Eat protein — Greek yogurt, eggs, chicken, shrimp — not the chips.</li></ol>
 <div class="timer" id="sosTimer">10:00</div><div class="row"><button onclick="startSOS()">Start 10 minutes</button><button class="ghost" onclick="document.getElementById('sos').close()">Close</button></div></dialog>
@@ -266,7 +266,7 @@ function clearGrocery(){S.grocery=S.grocery.filter(g=>!g.done);save();render();}
 function openSOS(){$('sos').showModal();}
 let sosInt=null;function startSOS(){let s=600;clearInterval(sosInt);sosInt=setInterval(()=>{s--;$('sosTimer').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s<=0){clearInterval(sosInt);$('sosTimer').textContent='Now decide — still hungry? Eat protein.';}},1000);}
 function saveProfile(){S.profile={age:+$('pAge').value||42,height:+$('pHeight').value||69,weight:+$('pWeight').value||'',goal:+$('pGoal').value||'',act:+$('pAct').value,beerCost:$('pBeerCost').value};save();render();alert('Targets set. Check the Today tab.');}
-function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gut-check-data.json';a.click();}
+function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='byebelly-data.json';a.click();}
 $('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{S=JSON.parse(t);save();render();alert('Imported.');});});
 // init profile fields
 $('pAge').value=S.profile.age;$('pHeight').value=S.profile.height;if(S.profile.weight)$('pWeight').value=S.profile.weight;if(S.profile.goal)$('pGoal').value=S.profile.goal;$('pAct').value=S.profile.act;if(S.profile.beerCost)$('pBeerCost').value=S.profile.beerCost;
