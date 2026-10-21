@@ -52,6 +52,7 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 <h1>💪 Bye<span>Belly</span></h1>
 <p class="sub">Lose the beer gut — food, movement, and the tape measure don't lie.</p>
 <button id="installBtn" class="ghost" style="display:none;margin-top:10px">📲 Install ByeBelly on this device</button>
+<div id="updateBanner" style="display:none;margin-top:10px;background:#2e7d46;color:#fff;padding:12px 14px;border-radius:12px"><b>Update available!</b> A new version of ByeBelly is ready. <button id="updateNowBtn" style="background:#fff;color:#14532a;margin-left:8px">Tap to update</button></div>
 </header>
 <nav><div class="tabs">
 <button class="tab active" data-tab="today">Today</button>
@@ -134,6 +135,7 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 
 <!-- SETUP -->
 <section id="setup">
+<div class="card"><h2>App updates</h2><p class="small muted">You are running <b>ByeBelly v<span id="verSetup">1.1</span></b>. Updates download automatically in the background — when one is ready, a banner appears at the top of the app and one tap applies it. Your logged data is never touched by an update.</p><div class="row"><button class="ghost" onclick="checkForUpdates()">Check for updates</button></div><p class="small" id="updStatus"></p></div>
 <div class="card"><h2>Your profile — this sets your targets</h2>
 <label>Age</label><input id="pAge" type="number" value="42">
 <label>Height (inches — 5'9" = 69)</label><input id="pHeight" type="number" value="69">
@@ -146,7 +148,7 @@ footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-s
 <p class="small muted">Targets use Mifflin-St Jeor. Deficit is capped at a sustainable ~500 cal/day — about 1 lb/week. Faster is not better; sustainable wins.</p></div>
 </section>
 </main>
-<footer>ByeBelly • Your data lives only in this browser (localStorage). Export it anytime from Progress. Not medical advice — check with a doctor before a new exercise program, especially with any health conditions.</footer>
+<footer>ByeBelly <b>v<span id="verFoot">1.1</span></b> • Your data lives only in this browser (localStorage). Export it anytime from Progress. Not medical advice — check with a doctor before a new exercise program, especially with any health conditions.</footer>
 
 <dialog id="sos"><h3>🍔 Hunger SOS — wait it out</h3><p>Do these three things first:</p><ol><li>Drink a full glass of water (tap one on Today).</li><li>Start this 10-minute timer and go for a short walk.</li><li>Still hungry after? Eat protein — Greek yogurt, eggs, chicken, shrimp — not the chips.</li></ol>
 <div class="timer" id="sosTimer">10:00</div><div class="row"><button onclick="startSOS()">Start 10 minutes</button><button class="ghost" onclick="document.getElementById('sos').close()">Close</button></div></dialog>
@@ -272,8 +274,34 @@ $('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)re
 $('pAge').value=S.profile.age;$('pHeight').value=S.profile.height;if(S.profile.weight)$('pWeight').value=S.profile.weight;if(S.profile.goal)$('pGoal').value=S.profile.goal;$('pAct').value=S.profile.act;if(S.profile.beerCost)$('pBeerCost').value=S.profile.beerCost;
 $('wDate').value=todayStr();
 render();
-// PWA: offline service worker + install prompt
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+// PWA: offline service worker + install prompt + tap-to-apply updates
+const APP_VERSION='1.1';
+let swReg=null, swWaiting=null, reloading=false;
+function showUpdateBanner(){$('updateBanner').style.display='block';}
+if('serviceWorker' in navigator){
+ window.addEventListener('load',()=>{
+  navigator.serviceWorker.register('./sw.js').then(reg=>{
+   swReg=reg;
+   if(reg.waiting&&navigator.serviceWorker.controller){swWaiting=reg.waiting;showUpdateBanner();}
+   reg.addEventListener('updatefound',()=>{
+    const nw=reg.installing; if(!nw)return;
+    nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller){swWaiting=nw;showUpdateBanner();}});
+   });
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading)return;reloading=true;location.reload();});
+ });
+}
+function applyUpdate(){if(swWaiting){swWaiting.postMessage({type:'SKIP_WAITING'});}else{location.reload();}}
+function checkForUpdates(){
+ const st=$('updStatus');
+ if(!swReg){st.textContent='Update checker is not available in this browser view — open the installed app and try again.';return;}
+ st.textContent='Checking…';
+ swReg.update().then(()=>{setTimeout(()=>{
+   if(swWaiting||swReg.waiting){swWaiting=swReg.waiting;showUpdateBanner();st.textContent='Update found — tap the green banner at the top of the app to apply it.';}
+   else st.textContent='You are on the latest version (v'+APP_VERSION+').';
+ },600);}).catch(()=>{st.textContent='Could not check right now — you may be offline. Updates also arrive automatically.';});
+}
+document.addEventListener('DOMContentLoaded',()=>{const b=$('updateNowBtn'); if(b)b.addEventListener('click',applyUpdate);});
 let deferredInstall=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('installBtn').style.display='inline-block';});
 $('installBtn').addEventListener('click',async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('installBtn').style.display='none';});
