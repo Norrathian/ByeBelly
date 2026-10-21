@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gut Check — Lose the Beer Gut</title>
+<meta name="description" content="Nutrition, exercise, calorie counting and waist progress — built to lose the beer gut.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#101613">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gut Check">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#101613;--card:#1a211c;--card2:#222b24;--ink:#eef3ee;--muted:#9db3a2;--green:#58c472;--green2:#2e7d46;--amber:#f2b544;--red:#e5604f;--line:#2e3a31;--radius:16px}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 16px 8px;max-width:980px;margin:auto}
+h1{margin:0;font-size:32px;letter-spacing:.2px}h1 span{color:var(--green)}
+.sub{color:var(--muted);margin:6px 0 0}
+nav{position:sticky;top:0;z-index:5;background:#101613ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .tabs{max-width:980px;margin:auto;display:flex;gap:6px;padding:10px 12px;overflow:auto}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tab.active{background:var(--green);color:#07130a;border-color:var(--green);font-weight:700}
+main{max-width:980px;margin:auto;padding:16px 12px 48px}
+section{display:none}section.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card h2,.card h3{margin:0 0 10px}.big{font-size:34px;font-weight:800}.muted{color:var(--muted)}.small{font-size:13px}
+.bar{height:12px;background:#0b0f0c;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--green);width:0%}
+.bar.amber>i{background:var(--amber)}.bar.red>i{background:var(--red)}
+button,.btn{background:var(--green);color:#07130a;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}button.danger{background:var(--red);color:#fff}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink);margin:4px 0 10px}
+label{font-size:13px;color:var(--muted)} .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
+.list{list-style:none;padding:0;margin:0}.list li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.pill{display:inline-block;padding:3px 8px;border-radius:99px;background:var(--card2);border:1px solid var(--line);font-size:12px}
+.badge{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}.badge.locked{opacity:.45}
+.kpi{text-align:center}.kpi .big{font-size:28px}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px;max-width:520px;width:92%}
+svg{width:100%;height:160px;background:#0b0f0c;border-radius:12px}
+.water{font-size:26px;cursor:pointer;filter:grayscale(1);opacity:.4}.water.on{filter:none;opacity:1}
+.timer{font-size:44px;font-weight:800;text-align:center}
+.recipe p{margin:6px 0}.check{flex:0 0 auto!important}
+footer{max-width:980px;margin:auto;padding:0 16px 30px;color:var(--muted);font-size:13px}
+@media(max-width:560px){h1{font-size:26px}.big{font-size:28px}}
+</style>
+</head>
+<body>
+<header>
+<h1>💪 Gut <span>Check</span></h1>
+<p class="sub">Lose the beer gut — food, movement, and the tape measure don't lie.</p>
+<button id="installBtn" class="ghost" style="display:none;margin-top:10px">📲 Install Gut Check on this device</button>
+</header>
+<nav><div class="tabs">
+<button class="tab active" data-tab="today">Today</button>
+<button class="tab" data-tab="food">Food & Calories</button>
+<button class="tab" data-tab="move">Move</button>
+<button class="tab" data-tab="progress">Progress</button>
+<button class="tab" data-tab="eat">Eat Smart</button>
+<button class="tab" data-tab="setup">Setup</button>
+</div></nav>
+<main>
+
+<!-- TODAY -->
+<section id="today" class="active">
+<div class="grid">
+<div class="card kpi"><div class="muted">Calories today</div><div class="big" id="kCal">0</div><div class="small muted" id="kCalTarget">Set up your profile →</div><div class="bar"><i id="calBar"></i></div></div>
+<div class="card kpi"><div class="muted">Protein</div><div class="big" id="kProtein">0g</div><div class="small muted" id="kProteinTarget"></div><div class="bar amber"><i id="proBar"></i></div></div>
+<div class="card kpi"><div class="muted">Waist — the gut metric</div><div class="big" id="kWaist">—</div><div class="small muted" id="kWaistSub">Log it in Progress</div></div>
+<div class="card kpi"><div class="muted">Beer Bank 🍺→💰</div><div class="big" id="kBeerCal">0</div><div class="small muted">calories avoided from beers not drunk</div><div class="small" id="kBeerMoney"></div></div>
+</div>
+<div class="card"><h3>Water</h3><div id="waterRow"></div><p class="small muted">Tap a glass. Water first — half of “hunger” is thirst.</p></div>
+<div class="card"><h3>Quick actions</h3><div class="row">
+<button onclick="go('food')">+ Log food</button>
+<button onclick="go('move')">Start workout</button>
+<button class="ghost" onclick="logWalkPrompt()">Log a walk</button>
+<button class="ghost" onclick="openSOS()">🍔 Hunger SOS</button>
+</div></div>
+<div class="card"><h3>Today’s plan</h3><p id="todayPlan"></p><p class="small muted" id="dailyTip"></p></div>
+<div class="card"><h3>Beer Bank — log today</h3><p class="small muted">How many beers did you <b>not</b> drink today that you normally would have?</p>
+<div class="row"><input id="beersAvoided" type="number" min="0" value="0"><button onclick="addBeerBank()">Bank it</button></div>
+<p class="small muted">1 beer ≈ 150 calories. It adds up fast — that WAS the gut.</p></div>
+</section>
+
+<!-- FOOD -->
+<section id="food">
+<div class="card"><h2>Food log — <span id="foodDateLabel"></span></h2>
+<div class="row"><input id="foodSearch" placeholder="Search foods… chicken, eggs, shrimp, oats"><select id="mealSel"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select></div>
+<ul class="list" id="foodResults"></ul></div>
+<div class="card"><h3>Quick-add calories</h3><div class="row"><input id="quickName" placeholder="Name (e.g. Restaurant burrito)"><input id="quickCal" type="number" placeholder="Calories"><input id="quickPro" type="number" placeholder="Protein g (optional)"><button onclick="quickAdd()">Add</button></div></div>
+<div class="card"><h3>Add your own food to the database</h3><div class="row"><input id="cfName" placeholder="Name"><input id="cfCal" type="number" placeholder="Cal"><input id="cfP" type="number" placeholder="Protein"><input id="cfC" type="number" placeholder="Carbs"><input id="cfF" type="number" placeholder="Fat"><button class="ghost" onclick="addCustomFood()">Save food</button></div></div>
+<div class="card"><h3>What you ate today</h3><ul class="list" id="foodLog"></ul>
+<div class="grid" style="margin-top:12px">
+<div><b>Protein</b> <span id="mP">0g</span><div class="bar amber"><i id="mPBar"></i></div></div>
+<div><b>Carbs</b> <span id="mC">0g</span><div class="bar"><i id="mCBar"></i></div></div>
+<div><b>Fat</b> <span id="mF">0g</span><div class="bar red"><i id="mFBar"></i></div></div>
+</div></div>
+</section>
+
+<!-- MOVE -->
+<section id="move">
+<div class="card"><h2>Today’s workout</h2><p class="muted small">Beginner bodyweight at home. No gym, no gear except a chair and a backpack. Form cues on every move — go slow, own the rep.</p><div id="workoutBox"></div></div>
+<div class="card"><h3>Rest timer</h3><div class="timer" id="restTimer">0:30</div><div class="row"><button onclick="startTimer(30)">30s</button><button onclick="startTimer(60)">60s</button><button onclick="startTimer(90)">90s</button><button class="ghost" onclick="stopTimer()">Stop</button></div></div>
+<div class="card"><h3>Log a walk / activity</h3><div class="row"><select id="actType"><option>Walk</option><option>Hike</option><option>Bike</option><option>Yard work</option><option>Other</option></select><input id="actMin" type="number" placeholder="Minutes"><input id="actDist" type="number" step="0.1" placeholder="Miles (optional)"><button onclick="addActivity()">Log activity</button></div>
+<ul class="list" id="actLog"></ul><p class="small muted" id="actStats"></p></div>
+<div class="card"><h3>Exercise library</h3><div id="exLibrary"></div></div>
+</section>
+
+<!-- PROGRESS -->
+<section id="progress">
+<div class="card"><h2>Weigh in & measure the gut</h2><div class="row"><input id="wDate" type="date"><input id="wWeight" type="number" step="0.1" placeholder="Weight (lb)"><input id="wWaist" type="number" step="0.1" placeholder="Waist (in) — at the belly button"><button onclick="addMeasure()">Save</button></div>
+<p class="small muted">Weigh in the morning, same time, after the bathroom. Measure the waist relaxed — don't suck it in, that defeats the point of Gut Check.</p></div>
+<div class="card"><h3>Weight trend</h3><svg id="weightChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg><p class="small muted" id="weightStats"></p></div>
+<div class="card"><h3>Waist trend — this is the one that matters</h3><svg id="waistChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg><p class="small muted" id="waistStats"></p></div>
+<div class="card"><h3>🏆 Badges</h3><div class="grid" id="badges"></div></div>
+<div class="card"><h3>Weekly report card</h3><pre id="report" style="white-space:pre-wrap;font-family:inherit"></pre><button class="ghost" onclick="copyReport()">Copy report</button></div>
+<div class="card"><h3>Your data is yours</h3><div class="row"><button class="ghost" onclick="exportData()">Export JSON</button><button class="ghost" onclick="document.getElementById('importFile').click()">Import JSON</button><input type="file" id="importFile" accept=".json" style="display:none"><button class="danger" onclick="if(confirm('Clear all Gut Check data?')){localStorage.removeItem(KEY);location.reload()}">Clear all</button></div></div>
+</section>
+
+<!-- EAT SMART -->
+<section id="eat">
+<div class="card"><h2>Eat Smart — filling, high-protein, no fish</h2><p class="small muted">Built around foods that keep you full on fewer calories. Shrimp is in. Fish is out. Tap “+ Grocery” and it builds your shopping list below.</p><div id="recipes"></div></div>
+<div class="card"><h3>🛒 Grocery list</h3><ul class="list" id="groceryList"></ul><div class="row"><input id="grocNew" placeholder="Add an item"><button class="ghost" onclick="addGrocery()">Add</button><button class="ghost" onclick="clearGrocery()">Clear checked</button></div></div>
+<div class="card"><h3>Gut-loss rules that actually work</h3><ul>
+<li><b>Protein at every meal</b> — it kills hunger and protects muscle while you lose.</li>
+<li><b>Walk after dinner</b> — 10–15 minutes. Blunts blood sugar, helps sleep, burns the gut fuel.</li>
+<li><b>Don't drink calories</b> — soda, juice, sweet coffee. That was beer's trick too.</li>
+<li><b>Half-plate veg, palm of protein, fist of carbs</b> — no weighing needed when eating out.</li>
+<li><b>Sleep 7+ hours</b> — bad sleep = next-day hunger hormones through the roof.</li>
+</ul></div>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+<div class="card"><h2>Your profile — this sets your targets</h2>
+<label>Age</label><input id="pAge" type="number" value="42">
+<label>Height (inches — 5'9" = 69)</label><input id="pHeight" type="number" value="69">
+<label>Starting weight (lb)</label><input id="pWeight" type="number" placeholder="e.g. 215">
+<label>Goal weight (lb)</label><input id="pGoal" type="number" placeholder="e.g. 190">
+<label>Activity level</label><select id="pAct"><option value="1.2">Mostly sitting</option><option value="1.375" selected>Light — walks, on my feet some</option><option value="1.55">Moderate — active job / training 3-5x</option><option value="1.725">Very active</option></select>
+<label>What a beer cost you before ($ each, for the Beer Bank — optional)</label><input id="pBeerCost" type="number" step="0.25" placeholder="e.g. 1.50 at home, 7 at a bar">
+<button onclick="saveProfile()">Save profile & calculate targets</button>
+<div id="targetOut" style="margin-top:12px"></div>
+<p class="small muted">Targets use Mifflin-St Jeor. Deficit is capped at a sustainable ~500 cal/day — about 1 lb/week. Faster is not better; sustainable wins.</p></div>
+</section>
+</main>
+<footer>Gut Check • Your data lives only in this browser (localStorage). Export it anytime from Progress. Not medical advice — check with a doctor before a new exercise program, especially with any health conditions.</footer>
+
+<dialog id="sos"><h3>🍔 Hunger SOS — wait it out</h3><p>Do these three things first:</p><ol><li>Drink a full glass of water (tap one on Today).</li><li>Start this 10-minute timer and go for a short walk.</li><li>Still hungry after? Eat protein — Greek yogurt, eggs, chicken, shrimp — not the chips.</li></ol>
+<div class="timer" id="sosTimer">10:00</div><div class="row"><button onclick="startSOS()">Start 10 minutes</button><button class="ghost" onclick="document.getElementById('sos').close()">Close</button></div></dialog>
+
+<script>
+const KEY='gutcheck.v1';
+let S=JSON.parse(localStorage.getItem(KEY)||'null')||{profile:{age:42,height:69,weight:'',goal:'',act:1.375,beerCost:''},measures:[],food:[],water:{},activities:[],workouts:[],beerBank:[],grocery:[],customFoods:[]};
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+const todayStr=()=>new Date().toLocaleDateString('en-CA');
+const $=id=>document.getElementById(id);
+function go(t){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('main section').forEach(s=>s.classList.toggle('active',s.id===t));render();}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+
+const FOODS=[
+['Chicken breast (6 oz)',280,53,0,6],['Ground turkey 93% (6 oz)',255,34,0,12],['Ground beef 90% (6 oz)',300,36,0,16],['Shrimp (6 oz)',170,36,2,2],['Eggs (2 large)',140,12,1,10],['Egg whites (1 cup)',126,26,2,0],['Greek yogurt plain 0% (1 cup)',100,17,6,0],['Cottage cheese (1 cup)',220,25,8,10],['Chicken pouch (2.6 oz)',70,12,2,1],['Turkey slices (4)',100,14,4,3],['String cheese (1)',80,7,1,5],
+['Oats (1/2 cup dry)',150,5,27,3],['Brown rice cooked (1 cup)',216,5,45,2],['White rice cooked (1 cup)',205,4,45,0],['Whole wheat bread (1 slice)',81,4,14,1],['Corn tortilla (1)',52,1,11,1],['Flour tortilla large (1)',146,4,25,4],['Potato baked (medium)',161,4,37,0],['Sweet potato (medium)',112,2,26,0],['Popcorn air-popped (3 cups)',93,3,19,1],['Pretzels (1 oz)',108,3,23,1],
+['Apple (medium)',95,0,25,0],['Banana (medium)',105,1,27,0],['Mixed berries (1 cup)',70,1,17,0],['Baby carrots (1 cup)',50,1,12,0],['Green beans (1 cup)',44,2,10,0],['Broccoli (1 cup)',55,4,11,0],['Side salad + light dressing',120,2,10,8],['Pickles (2 spears)',10,0,2,0],
+['Protein shake (1 scoop + water)',120,24,3,1],['Fairlife milk (1 cup)',80,13,6,2],['Peanut butter (1 tbsp)',95,4,3,8],['Almonds (1 oz)',164,6,6,14],['Salsa (1/4 cup)',20,1,4,0],['Hot sauce',0,0,0,0],['Mustard (1 tbsp)',10,0,1,1],['Light mayo (1 tbsp)',35,0,1,3],['BBQ sauce (2 tbsp)',58,0,14,0],
+['Soleil sparkling water',0,0,0,0],['Black coffee',5,0,0,0],['Unsweet tea',0,0,0,0],['Diet soda',0,0,1,0],['Beer (regular, 12 oz) — the old way',150,1,13,0],['Light beer (12 oz)',103,1,6,0]
+];
+const allFoods=()=>FOODS.concat(S.customFoods.map(f=>[f.name,f.cal,f.p,f.c,f.f]));
+const EXERCISES=[
+['Bodyweight Squats','Feet shoulder-width, sit hips back like a chair, knees track over toes. Chest up.','3 × 10'],
+['Wall → Knee → Floor Push-ups','Start at the wall. When 3×15 is easy, move to knees, then floor. Body in one straight line.','3 × 8–15'],
+['Glute Bridges','Squeeze your glutes hard at the top for 2 seconds. This is your back’s best friend.','3 × 12'],
+['Dead Bug','Low back pressed into the floor the whole time. Slow opposite arm/leg. Core gold.','3 × 8/side'],
+['Standing Lunges','Long step, torso tall, front knee over ankle. Use a chair for balance at first.','3 × 8/leg'],
+['Backpack Rows','Backpack with books, hinge at hips, pull to your ribs. Builds the back beer never did.','3 × 12'],
+['Plank','Elbows under shoulders, ribs down, breathe. Quality over time.','3 × 20–40s'],
+['Side Plank','Stack feet or drop a knee. Hips up, straight line ear-to-ankle.','3 × 20s/side'],
+['Bird Dog','Hands/knees, extend opposite arm/leg without rocking your hips.','3 × 8/side'],
+['Calf Raises','Slow up, slow down, full range off a step if you have one.','3 × 15']];
+const WORKOUTS=[
+{id:'A',name:'Workout A — Legs + Push',items:[0,1,2,6]},
+{id:'B',name:'Workout B — Hinge + Pull + Core',items:[4,5,3,7,8]}];
+const RECIPES=[
+['Shrimp & Garlic Green Beans',340,36,['Shrimp','Green beans','Garlic','Olive oil spray','Lemon'],'Sear shrimp 2 min/side with garlic, steam green beans, lemon over everything. Big plate, small calories.'],
+['Chicken, Rice & Salsa Bowl',520,48,['Chicken breast','Brown rice','Salsa','Black beans','Corn'],'Grill chicken, slice over rice + beans + corn, salsa as the sauce. Meal-prep 4 at once.'],
+['Egg Scramble Plate',410,28,['Eggs','Egg whites','Turkey slices','Whole wheat bread','Berries'],'2 eggs + whites scrambled with turkey, toast, berries on the side. Breakfast for dinner works.'],
+['Turkey Taco Lettuce/Tortilla Mix',480,38,['Ground turkey','Corn tortillas','Lettuce','Salsa','Greek yogurt'],'Season turkey like taco meat. Half tortillas, half lettuce cups. Greek yogurt instead of sour cream.'],
+['Greek Yogurt Power Snack',210,20,['Greek yogurt','Mixed berries','Almonds'],'Yogurt + berries + a sprinkle of almonds. The craving killer.'],
+['Backpack Chicken Stir-fry (no fish sauce)',450,44,['Chicken breast','Broccoli','Carrots','Soy sauce','Brown rice'],'Chicken + frozen veg + soy/garlic over rice. Faster than takeout delivery.']];
+const TIPS=['Walk after dinner tonight — 10 minutes counts.','Protein first at every meal, then everything else.','Your waist is measured relaxed. Honest numbers, honest progress.','One bad meal is data, not failure. Log it and move on.','Sleep is a fat-loss tool. Guard it.','Water before food. Every time.','The scale lies day to day. The 7-day average and the tape measure tell the truth.'];
+
+function targets(){const p=S.profile;if(!p.weight)return null;const kg=p.weight*0.4536,cm=p.height*2.54;const bmr=10*kg+6.25*cm-5*p.age+5;const tdee=bmr*(+p.act);const cal=Math.max(1500,Math.round(tdee-500));const protein=Math.round(p.goal? (p.goal*0.9) : (p.weight*0.8));return{bmr:Math.round(bmr),tdee:Math.round(tdee),cal,protein};}
+function todaysFood(){return S.food.filter(f=>f.date===todayStr())}
+function sums(list){return list.reduce((a,f)=>({cal:a.cal+f.cal, p:a.p+(f.p||0), c:a.c+(f.c||0), f:a.f+(f.f||0)}),{cal:0,p:0,c:0,f:0})}
+
+function render(){
+ const t=targets(), tf=todaysFood(), s=sums(tf);
+ $('kCal').textContent=s.cal; if(t){$('kCalTarget').textContent='of '+t.cal+' target • '+(t.cal-s.cal)+' left';$('calBar').style.width=Math.min(100,s.cal/t.cal*100)+'%';$('kProteinTarget').textContent='of '+t.protein+'g target';$('proBar').style.width=Math.min(100,s.p/t.protein*100)+'%';}
+ $('kProtein').textContent=s.p+'g';
+ const last=S.measures[S.measures.length-1];
+ if(last&&last.waist){$('kWaist').textContent=last.waist+'"';const first=S.measures.find(m=>m.waist);if(first&&last!==first)$('kWaistSub').textContent=(first.waist-last.waist).toFixed(1)+' in lost • started at '+first.waist+'"';}
+ const beerCal=S.beerBank.reduce((a,b)=>a+b.count*150,0);$('kBeerCal').textContent=beerCal.toLocaleString();
+ if(S.profile.beerCost){const money=S.beerBank.reduce((a,b)=>a+b.count,0)* (+S.profile.beerCost);$('kBeerMoney').textContent='≈ $'+money.toFixed(2)+' not spent on beer';}
+ // water
+ const w=S.water[todayStr()]||0;$('waterRow').innerHTML=Array.from({length:8},(_,i)=>'<span class="water '+(i<w?'on':'')+'" onclick="setWater('+(i+1)+')">🥤</span>').join('');
+ // plan
+ const dow=new Date().getDay();const isWorkout=[1,3,5].includes(dow);
+ $('todayPlan').textContent=isWorkout?('Today is a bodyweight day — '+(dow===3?'Workout B':'Workout A')+' in the Move tab, plus your walk.'): 'Today is a walk + recover day. Hit your steps, hit your protein, keep calories on target.';
+ $('dailyTip').textContent='💡 '+TIPS[new Date().getDate()%TIPS.length];
+ // food
+ $('foodDateLabel').textContent=todayStr();
+ renderFoodResults($('foodSearch').value||'');
+ $('foodLog').innerHTML=tf.map(f=>'<li><span><b>'+f.meal+':</b> '+f.name+'</span><span>'+f.cal+' cal <button class="ghost" onclick="delFood('+f.id+')">✕</button></span></li>').join('')||'<li>No food logged yet today.</li>';
+ $('mP').textContent=s.p+'g';$('mC').textContent=s.c+'g';$('mF').textContent=s.f+'g';
+ if(t){$('mPBar').style.width=Math.min(100,s.p/t.protein*100)+'%';$('mCBar').style.width=Math.min(100,s.c/180*100)+'%';$('mFBar').style.width=Math.min(100,s.f/70*100)+'%';}
+ renderWorkout();renderActivities();renderProgress();renderRecipes();renderGrocery();renderLibrary();
+ if(t)$('targetOut').innerHTML='<p>BMR <b>'+t.bmr+'</b> • Maintenance (TDEE) <b>'+t.tdee+'</b> cal<br>🎯 Daily target: <b>'+t.cal+' cal</b> and <b>'+t.protein+'g protein</b> — about 1 lb/week at a pace you can actually keep.</p>';
+}
+function renderFoodResults(q){const list=allFoods().filter(f=>f[0].toLowerCase().includes(q.toLowerCase())).slice(0,12);
+ $('foodResults').innerHTML=list.map((f,i)=>'<li><span>'+f[0]+' <span class="pill">'+f[1]+' cal • '+f[2]+'g protein</span></span><button onclick="addFood('+allFoods().indexOf(f)+')">+ Add</button></li>').join('')||'<li>No match — use Quick-add below.</li>';}
+$('foodSearch').addEventListener('input',e=>renderFoodResults(e.target.value));
+function addFood(idx){const f=allFoods()[idx];S.food.push({id:Date.now(),date:todayStr(),meal:$('mealSel').value,name:f[0],cal:f[1],p:f[2],c:f[3],f:f[4]});save();render();}
+function quickAdd(){const cal=+$('quickCal').value;if(!cal)return;S.food.push({id:Date.now(),date:todayStr(),meal:$('mealSel').value,name:$('quickName').value||'Quick add',cal,p:+$('quickPro').value||0,c:0,f:0});save();render();}
+function addCustomFood(){if(!$('cfName').value)return;S.customFoods.push({name:$('cfName').value,cal:+$('cfCal').value||0,p:+$('cfP').value||0,c:+$('cfC').value||0,f:+$('cfF').value||0});save();render();alert('Saved to your database.');}
+function delFood(id){S.food=S.food.filter(f=>f.id!==id);save();render();}
+function setWater(n){const d=todayStr();S.water[d]=(S.water[d]===n? n-1:n);save();render();}
+function addBeerBank(){const n=+$('beersAvoided').value;if(n>0){S.beerBank.push({date:todayStr(),count:n});save();render();}}
+function renderWorkout(){const dow=new Date().getDay();const w=WORKOUTS[[1,5].includes(dow)?0:1];
+ $('workoutBox').innerHTML='<h3>'+w.name+'</h3>'+w.items.map(i=>'<p><b>'+EXERCISES[i][0]+'</b> — '+EXERCISES[i][2]+'<br><span class="small muted">'+EXERCISES[i][1]+'</span></p>').join('')+'<button onclick="doneWorkout(\''+w.id+'\')">✓ I did this workout</button> <span class="small muted">Workouts done: '+S.workouts.length+'</span>';}
+function doneWorkout(id){S.workouts.push({date:todayStr(),id});save();render();alert('Logged. That\'s how the gut goes — one workout at a time.');}
+function renderLibrary(){$('exLibrary').innerHTML=EXERCISES.map(e=>'<p><b>'+e[0]+'</b> — '+e[2]+'<br><span class="small muted">'+e[1]+'</span></p>').join('');}
+let timerInt=null;function startTimer(sec){stopTimer();let s=sec;const upd=()=>{$('restTimer').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s--<=0)stopTimer();};upd();timerInt=setInterval(upd,1000);}
+function stopTimer(){if(timerInt)clearInterval(timerInt);timerInt=null;}
+function logWalkPrompt(){go('move');$('actType').value='Walk';$('actMin').focus();}
+function addActivity(){const min=+$('actMin').value;if(!min)return;const dist=+$('actDist').value||0;const wt=S.profile.weight||200;const cal=Math.round(min*( $('actType').value==='Walk'?3.5:5) * wt/200);
+ S.activities.push({id:Date.now(),date:todayStr(),type:$('actType').value,min,dist,cal});save();render();}
+function renderActivities(){const list=S.activities.slice(-8).reverse();$('actLog').innerHTML=list.map(a=>'<li><span>'+a.date+' • '+a.type+' — '+a.min+' min'+(a.dist?' • '+a.dist+' mi • '+(a.dist/(a.min/60)).toFixed(1)+' mph':'')+'</span><span>~'+a.cal+' cal <button class="ghost" onclick="delAct('+a.id+')">✕</button></span></li>').join('')||'<li>No activities yet.</li>';
+ const miles=S.activities.reduce((a,x)=>a+(x.dist||0),0);$('actStats').textContent='Total logged: '+S.activities.length+' activities • '+miles.toFixed(1)+' miles';}
+function delAct(id){S.activities=S.activities.filter(a=>a.id!==id);save();render();}
+function addMeasure(){const wt=$('wWeight').value,wa=$('wWaist').value;if(!wt&&!wa)return;S.measures.push({date:$('wDate').value||todayStr(),weight:wt?+wt:null,waist:wa?+wa:null});S.measures.sort((a,b)=>a.date<b.date?-1:1);if(wt&&!S.profile.weight){S.profile.weight=+wt;}save();render();}
+function chart(id,data,color){const el=$(id);if(data.length<2){el.innerHTML='<text x="20" y="80" fill="#9db3a2">Log at least 2 entries to see your trend</text>';return;}
+ const vals=data.map(d=>d.v),min=Math.min(...vals),max=Math.max(...vals),pad=(max-min)*0.2||1;
+ const pts=data.map((d,i)=>((i/(data.length-1))*560+20)+','+(140-((d.v-(min-pad))/((max+pad)-(min-pad)))*120)).join(' ');
+ el.innerHTML='<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="3"/><text x="20" y="20" fill="#9db3a2">high '+max+'</text><text x="20" y="155" fill="#9db3a2">low '+min+'</text>';}
+function renderProgress(){const wm=S.measures.filter(m=>m.weight),wa=S.measures.filter(m=>m.waist);
+ chart('weightChart',wm.map(m=>({v:m.weight})),'#58c472');chart('waistChart',wa.map(m=>({v:m.waist})),'#f2b544');
+ if(wm.length>1){const lost=(wm[0].weight-wm[wm.length-1].weight).toFixed(1);$('weightStats').textContent='Started '+wm[0].weight+' lb → now '+wm[wm.length-1].weight+' lb ('+(lost>0?lost+' lb lost':lost<0?Math.abs(lost)+' lb gained':'no change yet')+').'+(S.profile.goal&&lost>0?' At this pace you\'d hit '+S.profile.goal+' lb in about '+Math.max(1,Math.round((wm[wm.length-1].weight-S.profile.goal)/ (lost/ Math.max(1,(new Date(wm[wm.length-1].date)-new Date(wm[0].date))/6048e5)) ))+' weeks.':'');}
+ if(wa.length>1)$('waistStats').textContent='Waist: '+wa[0].waist+'" → '+wa[wa.length-1].waist+'" — '+(wa[0].waist-wa[wa.length-1].waist).toFixed(1)+' inches off the gut.';
+ // badges
+ const miles=S.activities.reduce((a,x)=>a+(x.dist||0),0);const beerCal=S.beerBank.reduce((a,b)=>a+b.count*150,0);
+ const B=[['First step',S.food.length+S.activities.length+S.measures.length>0],['Week of showing up',new Set(S.food.map(f=>f.date)).size>=7],['5 lb down',wm.length>1&&(wm[0].weight-wm[wm.length-1].weight)>=5],['First inch off the waist',wa.length>1&&(wa[0].waist-wa[wa.length-1].waist)>=1],['10 workouts',S.workouts.length>=10],['25 miles walked',miles>=25],['10,000 beer calories avoided',beerCal>=10000],['Protein pro — 7 days on target',false]];
+ $('badges').innerHTML=B.map(b=>'<div class="badge '+(b[1]?'':'locked')+'">'+(b[1]?'🏆':'🔒')+' <b>'+b[0]+'</b></div>').join('');
+ // report
+ const wk=Date.now()-7*864e5;const wf=S.food.filter(f=>new Date(f.date)>=wk);const days=new Set(wf.map(f=>f.date)).size||1;const avg=Math.round(sums(wf).cal/days);
+ $('report').textContent='GUT CHECK — WEEK IN REVIEW\nAvg calories/day (logged days): '+avg+'\nWorkouts: '+S.workouts.filter(w=>new Date(w.date)>=wk).length+'\nActivities: '+S.activities.filter(a=>new Date(a.date)>=wk).length+'\nBeer calories avoided (all time): '+beerCal.toLocaleString()+'\n'+(wa.length?'Latest waist: '+wa[wa.length-1].waist+'"':'')+'\n'+(wm.length?'Latest weight: '+wm[wm.length-1].weight+' lb':'');}
+function copyReport(){navigator.clipboard.writeText($('report').textContent);alert('Copied.');}
+function renderRecipes(){$('recipes').innerHTML=RECIPES.map((r,i)=>'<div class="card recipe" style="background:var(--card2)"><h3>'+r[0]+'</h3><p><span class="pill">'+r[1]+' cal</span> <span class="pill">'+r[2]+'g protein</span></p><p class="small">'+r[4]+'</p><button class="ghost" onclick="recipeToGrocery('+i+')">+ Grocery list</button></div>').join('');}
+function recipeToGrocery(i){RECIPES[i][3].forEach(x=>{if(!S.grocery.find(g=>g.name===x))S.grocery.push({name:x,done:false})});save();render();}
+function renderGrocery(){$('groceryList').innerHTML=S.grocery.map((g,i)=>'<li><span><input class="check" type="checkbox" '+(g.done?'checked':'')+' onchange="toggleGrocery('+i+')"> '+g.name+'</span><button class="ghost" onclick="delGrocery('+i+')">✕</button></li>').join('')||'<li>Empty — add from a recipe above.</li>';}
+function toggleGrocery(i){S.grocery[i].done=!S.grocery[i].done;save();render();}
+function delGrocery(i){S.grocery.splice(i,1);save();render();}
+function addGrocery(){if($('grocNew').value){S.grocery.push({name:$('grocNew').value,done:false});save();render();}}
+function clearGrocery(){S.grocery=S.grocery.filter(g=>!g.done);save();render();}
+function openSOS(){$('sos').showModal();}
+let sosInt=null;function startSOS(){let s=600;clearInterval(sosInt);sosInt=setInterval(()=>{s--;$('sosTimer').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s<=0){clearInterval(sosInt);$('sosTimer').textContent='Now decide — still hungry? Eat protein.';}},1000);}
+function saveProfile(){S.profile={age:+$('pAge').value||42,height:+$('pHeight').value||69,weight:+$('pWeight').value||'',goal:+$('pGoal').value||'',act:+$('pAct').value,beerCost:$('pBeerCost').value};save();render();alert('Targets set. Check the Today tab.');}
+function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gut-check-data.json';a.click();}
+$('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{S=JSON.parse(t);save();render();alert('Imported.');});});
+// init profile fields
+$('pAge').value=S.profile.age;$('pHeight').value=S.profile.height;if(S.profile.weight)$('pWeight').value=S.profile.weight;if(S.profile.goal)$('pGoal').value=S.profile.goal;$('pAct').value=S.profile.act;if(S.profile.beerCost)$('pBeerCost').value=S.profile.beerCost;
+$('wDate').value=todayStr();
+render();
+// PWA: offline service worker + install prompt
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('installBtn').style.display='inline-block';});
+$('installBtn').addEventListener('click',async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('installBtn').style.display='none';});
+window.addEventListener('appinstalled',()=>{$('installBtn').style.display='none';});
+</script>
+</body>
+</html>
